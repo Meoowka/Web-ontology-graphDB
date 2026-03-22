@@ -1,0 +1,177 @@
+@prefix f: <http://test.com/ontology#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://test.com/ontology#> rdf:type owl:Ontology .
+
+f:Person rdf:type owl:Class .
+f:Man rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:Woman rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:Parent rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:ParentMax4Children rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:ParentOf4Children rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:ParentOnlyDaughters rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:ParentOfSons rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:MarriedPerson rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:OnlyDaughtersParent rdf:type owl:Class ; rdfs:subClassOf f:Person .
+f:PersonWithParent rdf:type owl:Class ; rdfs:subClassOf f:Person .
+
+f:sex rdf:type owl:DatatypeProperty ;
+      rdfs:domain f:Person ;
+      rdfs:range xsd:string .
+
+f:age rdf:type owl:DatatypeProperty ;
+      rdfs:domain f:Person ;
+      rdfs:range xsd:integer .
+
+f:has_partner rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
+              rdfs:domain f:Person ;
+              rdfs:range f:Person .
+
+f:has_husband rdf:type owl:ObjectProperty , owl:FunctionalProperty ;
+              rdfs:domain f:Woman ;
+              rdfs:range f:Man .
+
+f:has_wife rdf:type owl:ObjectProperty , owl:FunctionalProperty ;
+           rdfs:domain f:Man ;
+           rdfs:range f:Woman .
+
+f:has_parent rdf:type owl:ObjectProperty ;
+             rdfs:domain f:Person ;
+             rdfs:range f:Person ;
+             owl:inverseOf f:has_child .
+
+f:has_child rdf:type owl:ObjectProperty ;
+            rdfs:domain f:Person ;
+            rdfs:range f:Person ;
+            owl:inverseOf f:has_parent .
+
+f:has_sibling rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
+              rdfs:domain f:Person ;
+              rdfs:range f:Person .
+
+f:has_ancestor rdf:type owl:ObjectProperty , owl:TransitiveProperty ;
+               rdfs:domain f:Person ;
+               rdfs:range f:Person .
+
+f:ParentMax4Children owl:equivalentClass [
+                                             rdf:type owl:Class ;
+                                             owl:intersectionOf (
+                                                          f:Person
+                                                          [ rdf:type owl:Restriction ;
+                                                            owl:onProperty f:has_child ;
+                                                            owl:maxCardinality "4"^^xsd:nonNegativeInteger
+                                                          ]
+                                                      )
+                                         ] .
+
+f:ParentOf4Children owl:equivalentClass [
+                                            rdf:type owl:Class ;
+                                            owl:intersectionOf (
+                                                         f:Person
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty f:has_child ;
+                                                           owl:cardinality "4"^^xsd:nonNegativeInteger
+                                                         ]
+                                                     )
+                                        ] .
+
+f:MarriedPerson owl:equivalentClass [
+                                        rdf:type owl:Class ;
+                                        owl:intersectionOf (
+                                                     f:Person
+                                                     [ rdf:type owl:Restriction ;
+                                                       owl:onProperty f:has_partner ;
+                                                       owl:someValuesFrom f:Person
+                                                     ]
+                                                 )
+                                    ] .
+
+f:PersonWithParent owl:equivalentClass [
+                                           rdf:type owl:Class ;
+                                           owl:intersectionOf (
+                                                        f:Person
+                                                        [ rdf:type owl:Restriction ;
+                                                          owl:onProperty f:has_parent ;
+                                                          owl:someValuesFrom f:Person
+                                                        ]
+                                                    )
+                                       ] .
+
+f:OnlyDaughtersParent owl:equivalentClass [
+                                              rdf:type owl:Class ;
+                                              owl:intersectionOf (
+                                                           f:Person
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty f:has_child ;
+                                                             owl:allValuesFrom f:Woman
+                                                           ]
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty f:has_child ;
+                                                             owl:minCardinality "1"^^xsd:nonNegativeInteger
+                                                           ]
+                                                       )
+                                          ] .
+
+f:Pavel rdf:type f:Person ;
+        f:sex "male" ;
+        f:age 34 ;
+        rdfs:comment "Павел — член семьи. Возраст указан в годах." ;
+        f:has_child f:Masha , f:Dasha ;
+        f:has_parent f:Vlad , f:Vera ;
+        f:has_partner f:Lena ;
+        f:has_ancestor f:Vlad , f:Vera .
+
+f:Lena rdf:type f:Person ;
+       f:sex "female" ;
+       f:age 33 ;
+       rdfs:comment "Лена — член семьи. Возраст указан в годах." ;
+       f:has_child f:Vanya , f:Misha , f:Masha , f:Dasha ;
+       f:has_partner f:Pavel .
+
+f:Ivan rdf:type f:Person ;
+       f:sex "male" ;
+       f:age 36 ;
+       rdfs:comment "Иван — член семьи. Возраст указан в годах." .
+
+f:Vanya rdf:type f:Person ;
+        f:sex "male" ;
+        f:age 12 ;
+        rdfs:comment "Ваня — член семьи. Возраст указан в годах." ;
+        f:has_parent f:Lena .
+
+f:Misha rdf:type f:Person ;
+        f:sex "male" ;
+        f:age 10 ;
+        rdfs:comment "Миша — член семьи. Возраст указан в годах." ;
+        f:has_parent f:Lena .
+
+f:Masha rdf:type f:Person ;
+        f:sex "female" ;
+        f:age 8 ;
+        rdfs:comment "Маша — член семьи. Возраст указан в годах." ;
+        f:has_parent f:Pavel , f:Lena .
+
+f:Dasha rdf:type f:Person ;
+        f:sex "female" ;
+        f:age 6 ;
+        rdfs:comment "Даша — член семьи. Возраст указан в годах." ;
+        f:has_parent f:Pavel , f:Lena .
+
+f:Vlad rdf:type f:Person ;
+       f:sex "male" ;
+       f:age 60 ;
+       rdfs:comment "Влад — член семьи. Возраст указан в годах." ;
+       f:has_child f:Pavel ;
+       f:has_ancestor f:Vlad .
+
+f:Vera rdf:type f:Person ;
+       f:sex "female" ;
+       f:age 58 ;
+       rdfs:comment "Вера — член семьи. Возраст указан в годах." ;
+       f:has_child f:Pavel ;
+       f:has_ancestor f:Vera .
+
+f:Pavel f:has_sibling f:Ivan .
