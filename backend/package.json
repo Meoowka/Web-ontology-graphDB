@@ -14,7 +14,7 @@
     "express": "^4.22.1",
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
-    "jsonld": "^8.1.0",
+    "jsonld": "^9.0.0",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
